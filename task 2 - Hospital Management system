@@ -1,0 +1,229 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+
+public class HospitalManagementSystem {
+
+    private static Map<Integer, Patient> patients = new HashMap<>();
+    private static List<Appointment> appointments = new ArrayList<>();
+    private static List<Invoice> invoices = new ArrayList<>();
+    private static List<InventoryItem> inventory = new ArrayList<>();
+    private static List<Staff> staffList = new ArrayList<>();
+    private static int patientCounter = 1;
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Welcome to the Hospital Management System!");
+
+        // Register a patient
+        registerPatient("John Doe", 30, "M", "123-456-7890");
+
+        // Schedule an appointment
+        scheduleAppointment(patientCounter - 1, "Dr. Smith", "2023-10-31");
+
+        // Add health record for a patient
+        addHealthRecord(patientCounter - 1, "Flu symptoms");
+
+        // Generate a billing invoice
+        generateInvoice(patientCounter - 1, "Consultation", 200.00);
+
+        // Add item to inventory
+        addInventoryItem("Bandages", 50);
+
+        // Add staff member
+        addStaffMember("Alice Johnson", "Nurse");
+
+        scanner.close();
+    }
+
+    // Patient Registration
+    public static void registerPatient(String name, int age, String gender, String contactInfo) {
+        Patient newPatient = new Patient(patientCounter++, name, age, gender, contactInfo);
+        patients.put(newPatient.getId(), newPatient);
+        System.out.println("Patient registered: " + newPatient.getName());
+    }
+
+    // Appointment Scheduling
+    public static void scheduleAppointment(int patientId, String doctor, String date) {
+        Appointment newAppointment = new Appointment(patientId, doctor, date);
+        appointments.add(newAppointment);
+        System.out.println("Appointment scheduled for patient ID: " + patientId + " with Dr. " + doctor + " on " + date);
+    }
+
+    // Electronic Health Record (EHR) Management
+    public static void addHealthRecord(int patientId, String record) {
+        if (patients.containsKey(patientId)) {
+            Patient patient = patients.get(patientId);
+            patient.addHealthRecord(record);
+            System.out.println("Health record added for patient ID: " + patientId);
+        } else {
+            System.out.println("Patient ID not found.");
+        }
+    }
+
+    public static void viewHealthRecord(int patientId) {
+        if (patients.containsKey(patientId)) {
+            Patient patient = patients.get(patientId);
+            System.out.println("EHR for " + patient.getName() + ": " + patient.getHealthRecords());
+        } else {
+            System.out.println("Patient ID not found.");
+        }
+    }
+
+    // Billing Management
+    public static void generateInvoice(int patientId, String description, double amount) {
+        Invoice newInvoice = new Invoice(patientId, description, amount);
+        invoices.add(newInvoice);
+        System.out.println("Invoice generated for patient ID: " + patientId + " - " + description + ": $" + amount);
+    }
+
+    public static void viewInvoice(int patientId) {
+        System.out.println("Invoices for patient ID: " + patientId);
+        for (Invoice invoice : invoices) {
+            if (invoice.getPatientId() == patientId) {
+                System.out.println(invoice.getDescription() + ": $" + invoice.getAmount());
+            }
+        }
+    }
+
+    // Inventory Management
+    public static void addInventoryItem(String itemName, int quantity) {
+        InventoryItem newItem = new InventoryItem(itemName, quantity);
+        inventory.add(newItem);
+        System.out.println("Added to inventory: " + itemName + " Quantity: " + quantity);
+    }
+
+    public static void viewInventory() {
+        System.out.println("Inventory Items:");
+        for (InventoryItem item : inventory) {
+            System.out.println(item.getItemName() + " - Quantity: " + item.getQuantity());
+        }
+    }
+
+    // Staff Management
+    public static void addStaffMember(String name, String role) {
+        Staff newStaff = new Staff(name, role);
+        staffList.add(newStaff);
+        System.out.println("Staff added: " + name + " Role: " + role);
+    }
+
+    public static void viewStaff() {
+        System.out.println("Hospital Staff:");
+        for (Staff staff : staffList) {
+            System.out.println(staff.getName() + " - Role: " + staff.getRole());
+        }
+    }
+}
+
+// Patient class for storing patient details
+class Patient {
+    private int id;
+    private String name;
+    private int age;
+    private String gender;
+    private String contactInfo;
+    private List<String> healthRecords;
+
+    public Patient(int id, String name, int age, String gender, String contactInfo) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
+        this.gender = gender;
+        this.contactInfo = contactInfo;
+        this.healthRecords = new ArrayList<>();
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<String> getHealthRecords() {
+        return healthRecords;
+    }
+
+    public void addHealthRecord(String record) {
+        healthRecords.add(record);
+    }
+}
+
+// Appointment class for managing appointments
+class Appointment {
+    private int patientId;
+    private String doctor;
+    private String date;
+
+    public Appointment(int patientId, String doctor, String date) {
+        this.patientId = patientId;
+        this.doctor = doctor;
+        this.date = date;
+    }
+}
+
+// Invoice class for billing information
+class Invoice {
+    private int patientId;
+    private String description;
+    private double amount;
+
+    public Invoice(int patientId, String description, double amount) {
+        this.patientId = patientId;
+        this.description = description;
+        this.amount = amount;
+    }
+
+    public int getPatientId() {
+        return patientId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+}
+
+// InventoryItem class for inventory details
+class InventoryItem {
+    private String itemName;
+    private int quantity;
+
+    public InventoryItem(String itemName, int quantity) {
+        this.itemName = itemName;
+        this.quantity = quantity;
+    }
+
+    public String getItemName() {
+        return itemName;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+}
+
+// Staff class for staff details
+class Staff {
+    private String name;
+    private String role;
+
+    public Staff(String name, String role) {
+        this.name = name;
+        this.role = role;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getRole() {
+        return role;
+    }
+}
